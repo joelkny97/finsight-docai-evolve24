@@ -1,5 +1,9 @@
 import feedparser
 
+
+#TODO : Add exception handling
+#TODO : Add logging
+#TODO : Remove static URL and static query feeds
 class googleNewsFeedScraper:
     def __init__(self, query):
         self.query = query
