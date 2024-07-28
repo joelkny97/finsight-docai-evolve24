@@ -2,10 +2,15 @@ from django.shortcuts import render
 from rest_framework import generics
 from news.models import News
 from .serializers import NewsSerializer
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
 class NewsList(generics.ListCreateAPIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = News.newsobjects.all()
     serializer_class = NewsSerializer
     pass
@@ -13,6 +18,9 @@ class NewsList(generics.ListCreateAPIView):
 
 
 class NewsDetail(generics.RetrieveDestroyAPIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     pass
