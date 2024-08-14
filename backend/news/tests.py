@@ -13,7 +13,7 @@ class TestCreatePost(TestCase):
 
         test_category = Category.objects.create(
             title="test_category")
-        test_user = User.objects.create_user(
+        test_user = User.objects.create_superuser(
             username="test_user", password="test_password")
         test_news = News.objects.create(
             category_id=1,

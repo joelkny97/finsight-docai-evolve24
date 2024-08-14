@@ -6,12 +6,14 @@ function NewsLoading(Component: any) {
         if (!isLoading) {
             return <Component {...props} />;
         
+           
+        
+        }
         return (
             <p style={{ textAlign: 'center', 'fontSize': '20px' }}>
                 Loading...
             </p>
         );
-        }
     }
 }
 

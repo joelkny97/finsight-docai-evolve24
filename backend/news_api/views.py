@@ -1,26 +1,55 @@
-from django.shortcuts import render
+from typing import Any
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics
 from news.models import News
 from .serializers import NewsSerializer
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS, BasePermission
+from  rest_framework.viewsets import ModelViewSet
 # Create your views here.
 
+
+class NewsUserWritePermission(BasePermission):
+    message = 'Editing posts is restricted to the author only.'
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        return obj.author == request.user
+
+
+# class NewsList(ModelViewSet):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = NewsSerializer
+
+
+#     def get_object(self, queryset=None, **kwargs):
+#         item = self.kwargs.get('pk')
+#         return get_object_or_404(News, title=item)
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         return News.objects.filter(subscribers=user)
+
 class NewsList(generics.ListCreateAPIView):
-    authentication_classes = [BasicAuthentication]
+    # authentication_classes = [BasicAuthentication]
+    def get_queryset(self):
+        user = self.request.user
+        return News.newsobjects.filter(subscribers__in=[user.id])
+    
     permission_classes = [IsAuthenticated]
 
-    queryset = News.newsobjects.all()
+    # queryset = News.newsobjects.all()
+
+    
     serializer_class = NewsSerializer
     pass
 
 
 
-class NewsDetail(generics.RetrieveDestroyAPIView):
-    authentication_classes = [BasicAuthentication]
+class NewsDetail(generics.RetrieveUpdateDestroyAPIView):
+    # authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     pass

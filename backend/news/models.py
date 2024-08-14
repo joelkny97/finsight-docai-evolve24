@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.utils import timezone
 # Create your models here.
 
@@ -36,7 +36,7 @@ class News(models.Model):
     url = models.URLField(blank=True, null=True)
     status = models.CharField(choices=options, default='all', max_length=25)
 
-    subscribers = models.ManyToManyField(User, related_name='subscribers', blank=True)
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='subscribers', blank=True)
 
     slug = models.SlugField(max_length=250, unique_for_date='created_at')
 

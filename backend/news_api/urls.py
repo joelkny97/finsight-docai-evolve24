@@ -1,8 +1,16 @@
 from django.urls import path
-from .views import NewsList, NewsDetail
+from .views import NewsList
+from .views import NewsDetail
+
+from  rest_framework.routers import DefaultRouter
 
 app_name = 'news_api'
 
+# router = DefaultRouter()
+# router.register('', NewsList, basename='news')
+
+
+# urlpatterns = router.urls
 
 
 urlpatterns = [

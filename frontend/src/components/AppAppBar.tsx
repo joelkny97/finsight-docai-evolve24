@@ -12,6 +12,9 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from './ToggleColorMode';
 import Logo from '../assets/jk-nav-site-logo.png';
+import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 const logoStyle = {
   width: '30px',
@@ -24,8 +27,21 @@ interface AppAppBarProps {
   toggleColorMode: () => void;
 }
 
+function loggedIn(){
+    if (localStorage.getItem('access_token') != null) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
   const [open, setOpen] = React.useState(false);
+
+  
+
+  const loggedInState = loggedIn();
+  console.log(loggedInState);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -95,7 +111,8 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
                 style={logoStyle}
                 alt="logo of FinSight"
               />
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              { !loggedInState &&
+                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <MenuItem
                   onClick={() => scrollToSection('topnews')}
                   sx={{ py: '6px', px: '12px' }}
@@ -112,24 +129,23 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
                     Features
                   </Typography>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('testimonials')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    Testimonials
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('highlights')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    Highlights
-                  </Typography>
-                </MenuItem>
                 
-              </Box>
+                
+              </Box>}
+
+              { loggedInState &&
+                <Box sx={{ display: { xs: 'none', md: 'flex'} }}>
+                <Link
+                  to={'/mynews'}
+                  
+                >
+                  <Typography variant="body2" color="text.primary" sx={{ py: '6px', px: '12px' }}>
+                    My News
+                  </Typography>
+                </Link>
+                
+                
+              </Box>}
             </Box>
             <Box
               sx={{
@@ -139,26 +155,43 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
               }}
             >
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
-              <Button
-                color="primary"
-                variant="text"
-                size="small"
-                component="a"
-                href="/mynews/"
-                target="_blank"
-              >
-                Sign in
-              </Button>
+              
+                {!loggedInState && 
+                 <Button
+                    color="primary"
+                    variant="text"
+                    size="small"
+                    component={NavLink}
+                    href="#"
+                    to="/login"
+                    >
+                    Sign in
+                </Button>}
+              {!loggedInState && 
               <Button
                 color="primary"
                 variant="contained"
                 size="small"
-                component="a"
+                component={NavLink}
                 href="#"
-                target="_blank"
+                to="/register"
+                
               >
                 Sign up
-              </Button>
+              </Button>}
+
+              {loggedInState && 
+                <Button
+                color="primary"
+                variant="contained"
+                size="small"
+                component={NavLink}
+                href="#"
+                to="/logout"
+                
+              >
+                Logout
+              </Button>}
             </Box>
             <Box sx={{ display: { sm: '', md: 'none' } }}>
               <Button
@@ -189,44 +222,63 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
                   >
                     <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
-                  <MenuItem onClick={() => scrollToSection('topnews')}>
+                  { !loggedInState &&
+                    <MenuItem onClick={() => scrollToSection('topnews')}>
+                    Top News
+                  </MenuItem>}
+                  { !loggedInState &&
+                    <MenuItem onClick={() => scrollToSection('features')}>
                     Features
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('features')}>
-                    Features
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('testimonials')}>
-                    Testimonials
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('highlights')}>
-                    Highlights
-                  </MenuItem>
-            
+                  </MenuItem>}
+                  
                   <Divider />
-                  <MenuItem>
+                  
+                  { !loggedInState &&
+                    <MenuItem>
+            
                     <Button
                       color="primary"
                       variant="contained"
-                      component="a"
+                      size="small"
+                      component={NavLink}
                       href="#"
-                      target="_blank"
+                      to="/register"
+                      
                       sx={{ width: '100%' }}
                     >
                       Sign up
                     </Button>
-                  </MenuItem>
+                  </MenuItem>}
+                  {
+                  !loggedInState &&
                   <MenuItem>
                     <Button
-                      color="primary"
-                      variant="outlined"
-                      component="a"
-                      href="/mynews/"
-                      target="_blank"
-                      sx={{ width: '100%' }}
+                        color="primary"
+                        variant="outlined"
+                        component={NavLink}
+                        href="#"
+                        
+                        to="/login"
+                        sx={{ width: '100%' }}
                     >
                       Sign in
                     </Button>
-                  </MenuItem>
+                  </MenuItem>}
+                  {
+                  loggedInState &&
+                    <MenuItem>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        size="small"
+                        component={NavLink}
+                        href="#"
+                        to="/logout"
+                        >
+                        Logout
+                    </Button>
+                  </MenuItem>}
+                    
                 </Box>
               </Drawer>
             </Box>

@@ -11,6 +11,10 @@ import Logo from '../assets/jk-nav-site-logo.png';
 import FacebookIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/X';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { PaletteMode } from '@mui/material';
+import getLPTheme from './getLPTheme';
+
 
 const logoStyle = {
   width: '140px',
@@ -27,8 +31,16 @@ function Copyright() {
   );
 }
 
+interface AppAppBarProps {
+  mode: PaletteMode;
+  toggleColorMode: () => void;
+}
+
+
 export default function Footer() {
+  
   return (
+    
     <Container
       sx={{
         display: 'flex',
@@ -101,13 +113,13 @@ export default function Footer() {
           <Typography variant="body2" fontWeight={600}>
             Product
           </Typography>
-          <Link color="text.secondary" href="#">
+          <Link color="text.secondary" href="/">
             Features
           </Link>
-          <Link color="text.secondary" href="#">
+          <Link color="text.secondary" href="/">
             Testimonials
           </Link>
-          <Link color="text.secondary" href="#">
+          <Link color="text.secondary" href="/">
             Highlights
           </Link>
           
@@ -122,7 +134,7 @@ export default function Footer() {
           <Typography variant="body2" fontWeight={600}>
             Company
           </Typography>
-          <Link color="text.secondary" href="#">
+          <Link color="text.secondary" href="/">
             About us
           </Link>
           
@@ -187,5 +199,6 @@ export default function Footer() {
         </Stack>
       </Box>
     </Container>
+    
   );
 }

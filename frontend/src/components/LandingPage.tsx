@@ -15,7 +15,7 @@ import Testimonials from './Testimonials';
 import Footer from './Footer';
 import getLPTheme from './getLPTheme';
 import TopNews from './TopNews';
-import myNews from './MyNews.tsx';
+
 
 
 interface ToggleCustomThemeProps {
@@ -88,11 +88,11 @@ export default function LandingPage() {
         
         <Divider />
         <Features />
-        <Divider />
-        <Testimonials />
+        {/* <Divider /> */}
+        {/* <Testimonials />
         <Divider />
         <Highlights />
-        <Divider />
+        <Divider /> */}
         <Footer />
       </Box>
       <ToggleCustomTheme
