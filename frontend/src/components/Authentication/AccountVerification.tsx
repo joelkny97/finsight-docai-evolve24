@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import axiosInstance from '../../Axios';
 
@@ -11,14 +11,19 @@ const EmailVerification = () => {
   axiosInstance.defaults.xsrfCookieName ='csrftoken';
   axiosInstance.defaults.xsrfHeaderName ='X-CSRFToken';
 
+  const {token} = useParams();
+
+  
+
 
   useEffect(() => {
-    const token = new URLSearchParams(location.search).get('token');
+    
 
     const verifyEmail = async () => {
+      console.log(token);
       try {
         const response = await axiosInstance.get('/user/email-verify/', {
-          params: { token },
+          params: {token: token},
         });
 
         console.log('Email verified successfully!', response.data);

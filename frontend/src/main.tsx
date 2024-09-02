@@ -4,12 +4,12 @@ import { Route , BrowserRouter as Router, Routes } from 'react-router-dom'
 import MyNews from './components/MyNews.tsx';
 import AppAppBar from './components/AppAppBar.tsx';
 import Footer from './components/Footer.tsx';
-import Register from './components/Register.tsx';
+import Register from './components/Authentication/Register.tsx';
 import { PaletteMode } from '@mui/material';
 
 import LandingPage from './components/LandingPage.tsx';
-import  Login  from './components/Login.tsx';
-import Logout from './components/Logout.tsx';
+import  Login  from './components/Authentication/Login.tsx';
+import Logout from './components/Authentication/Logout.tsx';
 import Dashboard from './components/Dashboard.tsx';
 import AccountVerification from './components/Authentication/AccountVerification.tsx';
 import ResetPasswordForm from './components/Authentication/ResetPasswordForm.tsx';
@@ -34,7 +34,7 @@ const routing = (
         <Route path="/dashboard" element = {<Dashboard/>} />
         <Route path="/mynews" element = {<MyNews/>} />
 
-        <Route path="/email-verify" element = {<AccountVerification/>} />
+        <Route path="/email-verify/:token" element = {<AccountVerification/>} />
 
         <Route path="/request-reset-password" element={<RequestResetPassword />} />
         <Route path="/reset-password-form/:token" element={<ResetPasswordForm />} />

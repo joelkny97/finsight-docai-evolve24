@@ -1,5 +1,5 @@
 import * as React from 'react';
-import axiosInstance from '../Axios.tsx';
+import axiosInstance from '../../Axios.tsx';
 import { useNavigate } from "react-router-dom";
 
 //Material UI

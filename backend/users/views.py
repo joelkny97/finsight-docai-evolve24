@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, GenericAPIView
 from .models import NewUser
 from . import models
-from .serializers import RegisterUserSerializer
+from .serializers import RegisterUserSerializer, EmailVerificationSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.sites.shortcuts import get_current_site
@@ -36,8 +36,8 @@ class CustomUserCreate(APIView):
 
                 # get domain
                 current_site = get_current_site(request).domain
-                relative_link = reverse("users:email-verify")
-                absurl = 'http://' + current_site + relative_link + "?token=" + str(tokens)
+                relative_link = "/email-verify/"
+                absurl = 'http://' + current_site + relative_link + str(tokens)
                 email_body = 'Hi ' + user_email.user_name + ',\n\n Use the link below to verify your email \n' + absurl
 
                 data = {'email_body': email_body, 'to_email': user_email.email, 'email_subject': 'FinSight Account Verification'}
@@ -61,14 +61,15 @@ class BlackListTokenView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
-class VerifyEmail(GenericAPIView):
-    serializer_class = RegisterUserSerializer
+class VerifyEmail(APIView):
+    serializer_class = EmailVerificationSerializer
 
-    renderer_classes =  [TemplateHTMLRenderer]
+    # renderer_classes =  [TemplateHTMLRenderer]
 
 
     def get(self, request):
         token = request.GET.get('token')
+        print(token)
 
         if not token:
             return Response({'email': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
@@ -83,19 +84,19 @@ class VerifyEmail(GenericAPIView):
                 user.save()
 
             
-            # return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
         
             return render(request,context={'message': 'Account successfully activated'}, status=status.HTTP_200_OK, template_name='activatesuccess.html')
         except jwt.ExpiredSignatureError as identifier:
 
-            return render(request,context={'error': 'Expired signature'}, status=status.HTTP_400_BAD_REQUEST, template_name='activatefailure.html')
-            # return Response({'error': 'Expired signature'}, status=status.HTTP_400_BAD_REQUEST)
+            # return render(request,context={'error': 'Expired signature'}, status=status.HTTP_400_BAD_REQUEST, template_name='activatefailure.html')
+            return Response({'error': 'Expired signature'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
-            return render(request,context={'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST, template_name='activatefailure.html')
-            # return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            # return render(request,context={'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST, template_name='activatefailure.html')
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         except NewUser.DoesNotExist:
-            return render(request,context={'error': 'User Does Not Exist'}, status=status.HTTP_404_NOT_FOUND, template_name='activatefailure.html')
-            # return Response({'error': 'User Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
+            # return render(request,context={'error': 'User Does Not Exist'}, status=status.HTTP_404_NOT_FOUND, template_name='activatefailure.html')
+            return Response({'error': 'User Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
         
 
         
