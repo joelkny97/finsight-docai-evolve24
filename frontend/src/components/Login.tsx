@@ -71,7 +71,7 @@ export default function SignIn() {
         axiosInstance.defaults.xsrfHeaderName ='X-CSRFToken';
 
         axiosInstance
-            .post(`newsapi/token/`, {
+            .post(`api/token/`, {
                 email: formData.email,
                 password: formData.password,
             },{headers: {
@@ -85,10 +85,6 @@ export default function SignIn() {
 
                 axiosInstance.defaults.headers['Authorization'] = 'JWT ' + localStorage.getItem('access_token');
                 navigate('/mynews');
-
-
-                // console.log(res);
-                // console.log(res.data);
             
                 
             }
@@ -96,7 +92,7 @@ export default function SignIn() {
 
     )
     .catch((err) => {
-        // console.log(err);
+        console.log(err.response);
         if (err.response.status === 401) {
             console.error(err.response.data.detail);
             setError(err.response.data.detail);
@@ -165,7 +161,7 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Button href="#" component={NavLink} to='#'>
+                <Button href="#" component={NavLink} to='/request-reset-password'>
                   Forgot password?
                 </Button>
               </Grid>

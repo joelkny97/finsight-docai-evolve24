@@ -10,6 +10,10 @@ import { PaletteMode } from '@mui/material';
 import LandingPage from './components/LandingPage.tsx';
 import  Login  from './components/Login.tsx';
 import Logout from './components/Logout.tsx';
+import Dashboard from './components/Dashboard.tsx';
+import AccountVerification from './components/Authentication/AccountVerification.tsx';
+import ResetPasswordForm from './components/Authentication/ResetPasswordForm.tsx';
+import RequestResetPassword from './components/Authentication/RequestResetPassword.tsx';
 // import './index.css'
 // const [mode, setMode] = React.useState<PaletteMode>('dark');
   
@@ -27,7 +31,14 @@ const routing = (
         <Route path="/register" element = {<Register/>} />
         <Route path="/login" element = {<Login/>} />
         <Route path="/logout" element = {<Logout/>} />
+        <Route path="/dashboard" element = {<Dashboard/>} />
         <Route path="/mynews" element = {<MyNews/>} />
+
+        <Route path="/email-verify" element = {<AccountVerification/>} />
+
+        <Route path="/request-reset-password" element={<RequestResetPassword />} />
+        <Route path="/reset-password-form/:token" element={<ResetPasswordForm />} />
+        
       
 
       </Routes>

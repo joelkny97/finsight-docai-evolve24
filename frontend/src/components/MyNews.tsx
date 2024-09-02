@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../Axios';
 // import './App.css';
 import NewsLoadingComponent from './NewsLoading';
 import News from './News';
@@ -66,6 +68,8 @@ function myNews() {
     news: null
   });
 
+  const navigate = useNavigate();
+
   const [mode, setMode] = React.useState<PaletteMode>('dark');
   const [showCustomTheme, setShowCustomTheme] = React.useState(false);
   const LPtheme = createTheme(getLPTheme(mode));
@@ -84,18 +88,26 @@ function myNews() {
 
   useEffect(() => {
     setAppState({ loading: true, news: null });
-    fetch("http://127.0.0.1:8000/newsapi/", {
-      headers: new Headers(
-        {
-          Authorization: "JWT " + localStorage.getItem("access_token"),
-        }
-      ),
-
-    })
-      .then(res => res.json())
+    axiosInstance.defaults.headers['Authorization'] = `JWT ${localStorage.getItem('access_token')}`;
+    axiosInstance.get("http://127.0.0.1:8000/api/news/",
+    )
+      
       .then(data => {
-        setAppState({ loading: false, news: data });
-      });
+        setAppState({ loading: false, news: data.data });
+      })
+      .catch((err) =>{
+
+        // console.log(err);
+        if (err.response.status === 401) {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+        }
+
+        setAppState({ loading: true, news: null });
+        navigate('/login');
+
+      })
+      ;
     
   }, [setAppState]);
 

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div id="success activate-failure">
+
+    <h1>There was an error with account activation. Please check your email and click on the link again.</h1>
+    <p> {{ error|safe }}</p>
+
+</div>
+
+
+{% endblock %}

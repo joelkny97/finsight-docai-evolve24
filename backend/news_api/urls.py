@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import NewsList
 from .views import NewsDetail
+from .views import TopNewsList
 
 from  rest_framework.routers import DefaultRouter
 
@@ -16,4 +17,5 @@ app_name = 'news_api'
 urlpatterns = [
     path('', NewsList.as_view(), name='listcreate'),
     path('<int:pk>/', NewsDetail.as_view(), name='detailcreate'),
+    path('topnews/', TopNewsList.as_view(), name='topnews'),
 ]

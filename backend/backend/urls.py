@@ -28,11 +28,11 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',  include('news.urls')),
-    path('newsapi/',  include('news_api.urls')),
+    path('api/news/',  include('news_api.urls')),
     path('user/',  include('users.urls'), name='users'),
-    path('newsapi-auth/', include('rest_framework.urls'), name='rest_framework'),
-    path('newsapi/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('newsapi/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api-auth/', include('rest_framework.urls'), name='rest_framework'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 

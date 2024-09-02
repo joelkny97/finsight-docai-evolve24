@@ -50,7 +50,7 @@ class TestCreatePost(TestCase):
         drf_client.force_login(auth_user)
 
         # print(self.client .is_authenticated)
-        response = drf_client.get('/newsapi/',follow=True )
+        response = drf_client.get('/api/news/',follow=True )
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test_title')
@@ -63,7 +63,7 @@ class TestCreatePost(TestCase):
         drf_client.force_authenticate(user=auth_user)
         drf_client.force_login(auth_user)
 
-        response = drf_client.get('/newsapi/1/',follow=True )
+        response = drf_client.get('/api/news/1/',follow=True )
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test_title')

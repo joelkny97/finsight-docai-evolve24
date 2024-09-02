@@ -2,7 +2,13 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.dispatch import receiver
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from utils.email_helper import EmailUtil
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 class CustomAccountManager(BaseUserManager):
 
@@ -53,3 +59,32 @@ class NewUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.user_name
+    
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'refresh': str(refresh.access_token),
+        }
+    
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    sitelink = get_current_site(instance.request).domain
+
+    token = "{}".format(reset_password_token.key)
+
+    fulllink = str(sitelink)+"/"+ str("reset-password-form/")+str(token)
+
+
+    email_plaintext_message = "Please open the link below and reset your password \n\n{}".format(fulllink)
+    
+    print(token)
+    print(fulllink)
+
+    # print(email_plaintext_message)
+
+    data = {'email_body': email_plaintext_message, 'to_email': reset_password_token.user.email, 'email_subject': 'Password Reset Requested'}
+    EmailUtil.send_email(data = data)
+

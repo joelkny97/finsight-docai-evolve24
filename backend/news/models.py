@@ -19,11 +19,16 @@ class News(models.Model):
         ('archived', 'Archived'),
         ('hidden', 'Hidden'),
         ('all', 'All'),
+        ('top', 'Top'),
     )
 
     class NewsObjects(models.Manager):
         def get_queryset(self):
             return super().get_queryset().filter(status='all')
+        
+    class TopNewsObjects(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(status='top')
 
     category = models.ForeignKey(Category, on_delete=models.PROTECT, default=1)
 
@@ -48,7 +53,8 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
-
-
-
-
+    
+    @classmethod
+    def create(cls, **kwargs):
+        news = cls.objects.create(**kwargs)
+        return news

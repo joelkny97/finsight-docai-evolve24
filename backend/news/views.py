@@ -1,17 +1,14 @@
 from django.shortcuts import render
 from pygooglenews import GoogleNews
-
+import datetime
 # Create your views here.
+from news_api.scrapers import top_news_fetcher
+from news.models import News
+
 
 
 def news(request):
-
-    # gn = GoogleNews()
-
-    # business_topics = gn.topic_headlines('business')['entries']
-
-    # context = {}
-
-    # context['top_news'] = business_topics
+      
+    
 
     return render(request, 'home.html', )

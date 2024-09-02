@@ -104,12 +104,13 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
                 px: 0,
               }}
             >
-              <img
+              <img 
                 src={
                   Logo
                 }
                 style={logoStyle}
                 alt="logo of FinSight"
+                
               />
               { !loggedInState &&
                 <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -131,6 +132,21 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
                 </MenuItem>
                 
                 
+
+              </Box>}
+
+              { loggedInState &&
+                <Box sx={{ display: { xs: 'none', md: 'flex'} }}>
+                <Link
+                  to={'/dashboard'}
+                  
+                >
+                  <Typography variant="body2" color="text.primary" sx={{ py: '6px', px: '12px' }}>
+                    Dashboard
+                  </Typography>
+                </Link>
+                
+                
               </Box>}
 
               { loggedInState &&
@@ -146,6 +162,9 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
                 
                 
               </Box>}
+
+              
+
             </Box>
             <Box
               sx={{

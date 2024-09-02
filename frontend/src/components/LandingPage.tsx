@@ -11,7 +11,6 @@ import AppAppBar from './AppAppBar';
 import Hero from './Hero';
 import Highlights from './Highlights';
 import Features from './Features';
-import Testimonials from './Testimonials';
 import Footer from './Footer';
 import getLPTheme from './getLPTheme';
 import TopNews from './TopNews';
@@ -95,10 +94,10 @@ export default function LandingPage() {
         <Divider /> */}
         <Footer />
       </Box>
-      <ToggleCustomTheme
+      {/* <ToggleCustomTheme
         showCustomTheme={showCustomTheme}
         toggleCustomTheme={toggleCustomTheme}
-      />
+      /> */}
     </ThemeProvider>
   );
 }

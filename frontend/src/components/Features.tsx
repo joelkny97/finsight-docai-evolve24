@@ -18,23 +18,23 @@ const items = [
     icon: <ViewQuiltRoundedIcon />,
     title: 'Dashboard',
     description:
-      'This item could provide a snapshot of the most important metrics or data points related to the product.',
+      'Get a comprehensive view of your financial health with our dashboard. Track your spending, investments, and account balances at a glance. Stay updated with key metrics and insights related to your finances.',
     imageLight: 'url("/static/images/templates/templates-images/dash-light.png")',
     imageDark: 'url("/static/images/templates/templates-images/dash-dark.png")',
   },
   {
     icon: <EdgesensorHighRoundedIcon />,
-    title: 'Mobile integration',
+    title: 'Financial Insights',
     description:
-      'This item could provide information about the mobile app version of the product.',
+      'Receive tailored insights and alerts about your investments. Our app keeps you informed about significant market movements and news that could impact your portfolio, helping you make informed decisions.',
     imageLight: 'url("/static/images/templates/templates-images/mobile-light.png")',
     imageDark: 'url("/static/images/templates/templates-images/mobile-dark.png")',
   },
   {
     icon: <DevicesRoundedIcon />,
-    title: 'Available on all platforms',
+    title: 'Cross-Platform Access',
     description:
-      'This item could let users know the product is available on all platforms, such as web, mobile, and desktop.',
+      'Access your financial tracker from any device. Whether you’re on mobile, web, or desktop, our application ensures a seamless experience so you can manage your finances and investments anytime, anywhere.',
     imageLight: 'url("/static/images/templates/templates-images/devices-light.png")',
     imageDark: 'url("/static/images/templates/templates-images/devices-dark.png")',
   },
@@ -62,9 +62,7 @@ export default function Features() {
               color="text.secondary"
               sx={{ mb: { xs: 2, sm: 4 } }}
             >
-              Here you can provide a brief overview of the key features of the
-              product. For example, you could list the number of features, the types
-              of features, add-ons, or the benefits of the features.
+              Discover the essential features of our personal finance and investment tracker. Manage your finances effectively, receive timely updates, and access your data across multiple platforms
             </Typography>
           </div>
           <Grid container item gap={1} sx={{ display: { xs: 'auto', sm: 'none' } }}>

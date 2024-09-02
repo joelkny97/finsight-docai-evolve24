@@ -65,6 +65,7 @@ interface NewsProps {
 }
 
 const News: React.FC<NewsProps> = ({ news }) => {
+    console.log(news);
     if (!news || news.length === 0) return <p>Cannot find any posts, sorry</p>;
 
     return (

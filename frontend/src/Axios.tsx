@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
 
 		if (
 			error.response.status === 401 &&
-			originalRequest.url === baseURL + 'newsapi/token/refresh/'
+			originalRequest.url === baseURL + 'api/token/refresh/'
 		) {
 			window.location.href = '/login/';
 			return Promise.reject(error);
@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
 
 				if (tokenParts.exp > now) {
 					return axiosInstance
-						.post('newsapi/token/refresh/', { refresh: refreshToken })
+						.post('api/token/refresh/', { refresh: refreshToken })
 						.then((response) => {
 							localStorage.setItem('access_token', response.data.access);
 							localStorage.setItem('refresh_token', response.data.refresh);
@@ -77,7 +77,7 @@ axiosInstance.interceptors.response.use(
 				}
 			} else {
 				console.log('Refresh token not available.');
-				window.location.href = '/login/';
+				// window.location.href = '/login/';
 			}
 		}
 

@@ -4,7 +4,7 @@ from rest_framework import generics
 from news.models import News
 from .serializers import NewsSerializer
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS, BasePermission
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS, BasePermission, AllowAny
 from  rest_framework.viewsets import ModelViewSet
 # Create your views here.
 
@@ -55,6 +55,16 @@ class NewsDetail(generics.RetrieveUpdateDestroyAPIView):
     pass
 
 
+class TopNewsList(generics.ListAPIView):
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return News.objects.filter(status="top").order_by('-created_at')[:6]
+    
+
+    # queryset = News.objects.all().order_by('-created_at')[:5]
+    serializer_class = NewsSerializer
+    pass
 
 
 """ Concrete View Classes

@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('', views.news, name='news'),
 
-    re_path(r'^(?!.*(?:newsapi/|user/)).*/?$', views.news),
+    re_path(r'^(?!.*(?:api/|user/)).*/?$', views.news),
 
     
 ]
