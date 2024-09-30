@@ -46,6 +46,8 @@ class NewsList(generics.ListCreateAPIView):
     
     def create(self, request, *args, **kwargs):
         #TODO: Add validation, fix post issue when writing multiple articles, writing duplicate articles
+        #TODO: Add keyword match and fetch similar articles for new users and add new sunscription to it
+        #TODO: Filter only latest articles and archive older articles
         user = request.user
         query = request.data.get('title')
         print(query)
