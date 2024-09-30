@@ -10,6 +10,21 @@ class Category(models.Model):
     def __str__(self):
         return self.title
     
+class StockList(models.Model):
+    name = models.CharField(max_length=100, default='N/A')
+    symbol = models.CharField(max_length=10,unique=True)
+    instrument_type = models.CharField(max_length=100, blank=True, null=True, default='N/A')
+    country = models.CharField(max_length=100, blank=True, null=True, default='N/A')
+    sector = models.CharField(max_length=100, default='N/A')
+    index  = models.CharField(max_length=100, blank=True, null=True, default='N/A')
+
+    
+    def __str__(self):
+        return self.symbol
+    
+class Keyword(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
 class News(models.Model):
 
     options = (
@@ -40,6 +55,8 @@ class News(models.Model):
     image = models.ImageField(upload_to='images/', blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     status = models.CharField(choices=options, default='all', max_length=25)
+
+    keywords = models.ManyToManyField(Keyword, blank=True)
 
     subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='subscribers', blank=True)
 

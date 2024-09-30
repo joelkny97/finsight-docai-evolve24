@@ -156,6 +156,20 @@ export default function RequestResetPassword() {
             >
               Send Password Reset Link
             </Button>
+
+            <Grid container alignItems={'center'} justifyContent={'flex-end'}>
+              <Grid item xs>
+                <Button href="#" component={NavLink} to='/login'>
+                  Sign In
+                </Button>
+              </Grid>
+              <Grid item xs>
+                <Button href="#" component={NavLink} to='/register'>
+                  Sign Up
+                </Button>
+              </Grid>
+              
+            </Grid>
             
           </Box>
         </Box>

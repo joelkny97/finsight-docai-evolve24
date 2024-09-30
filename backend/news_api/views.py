@@ -6,6 +6,7 @@ from .serializers import NewsSerializer
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS, BasePermission, AllowAny
 from  rest_framework.viewsets import ModelViewSet
+from news.util.stock_writer import write_new_query_to_db
 # Create your views here.
 
 
@@ -34,6 +35,7 @@ class NewsList(generics.ListCreateAPIView):
     # authentication_classes = [BasicAuthentication]
     def get_queryset(self):
         user = self.request.user
+        write_new_query_to_db(user, self.request.GET.get('q'))
         return News.newsobjects.filter(subscribers__in=[user.id])
     
     permission_classes = [IsAuthenticated]
