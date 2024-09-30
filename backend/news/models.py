@@ -53,7 +53,7 @@ class News(models.Model):
     author = models.TextField(null=True)
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='images/', blank=True, null=True)
-    url = models.URLField(blank=True, null=True)
+    url = models.URLField(blank=True, null=True, max_length=500)
     status = models.CharField(choices=options, default='all', max_length=25)
 
     keywords = models.ManyToManyField(Keyword, blank=True)

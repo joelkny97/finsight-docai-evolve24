@@ -13,14 +13,14 @@ def write_new_query_to_db(user, query):
 
     for news in news_list:
         try:
-            user = User.objects.get(username=user.username)  # replace with the current user's username
+            
             n = News.objects.create(title=news['title'], 
                                     headline=news['title'], 
                                     content=news['summary'], 
                                     author="GoogleNewsWriter", 
                                     status="subscribed",
                                     url=news['link'],
-                                    created_at=timezone.make_aware(datetime.datetime.strptime(news['published'], "%a, %d %b %Y %H:%M:%S %Z"), timezone.get_current_timezone()),
+                                    created_at=timezone.make_aware(datetime.strptime(news['published'], "%a, %d %b %Y %H:%M:%S %Z"), timezone.get_current_timezone()),
                                     )
             n.subscribers.add(user)  # add the current user as a subscriber
             keywords = Keyword.objects.get_or_create(name__in=query)  # get the keywords from the news article

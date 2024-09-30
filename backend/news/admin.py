@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import News, Category
+from .models import News, Category, Keyword, StockList
 # Register your models here.
 
 
@@ -11,3 +11,10 @@ class SubscriberAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category)
+
+@admin.register(Keyword)
+class KeywordAdmin(admin.ModelAdmin):
+
+    list_display = ('name', 'id')
+
+admin.site.register(StockList)

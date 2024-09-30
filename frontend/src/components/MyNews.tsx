@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../Axios';
-// import './App.css';
 import NewsLoadingComponent from './NewsLoading';
 import StockSearchBar from './StockSearch';
 import News from './News';
@@ -9,23 +8,16 @@ import getLPTheme from './getLPTheme';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { PaletteMode } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import AppAppBar from './AppAppBar';
 import Footer from './Footer';
-
-import { Stack, useTheme } from '@mui/system';
+import Box from '@mui/material/Box';
 
 interface ToggleCustomThemeProps {
-  showCustomTheme: Boolean;
+  showCustomTheme: boolean;
   toggleCustomTheme: () => void;
 }
 
@@ -67,13 +59,11 @@ function ToggleCustomTheme({
   );
 }
 
-
-
-function myNews() {
+function MyNews() {
   const NewsLoading = NewsLoadingComponent(News);
   const [appState, setAppState] = useState({
     loading: false,
-    news: null
+    news: null,
   });
 
   const navigate = useNavigate();
@@ -91,56 +81,56 @@ function myNews() {
     setShowCustomTheme((prev) => !prev);
   };
 
-  // const username = "finsight-admin";
-  // const password = "jetfire123";
-
-  useEffect(() => {
+  const fetchNews = (query: string | null) => {
     setAppState({ loading: true, news: null });
     axiosInstance.defaults.headers['Authorization'] = `JWT ${localStorage.getItem('access_token')}`;
-    const query = new URLSearchParams({ q: 'Apple' }); // replace 'your_query_here' with the actual query value
-    axiosInstance.get(`http://127.0.0.1:8000/api/news/?${query.toString()}`,
-    )
-      
-      .then(data => {
+
+    const apiEndpoint = 'http://127.0.0.1:8000/api/news/';
+    const requestConfig = query
+      ? { method: 'POST', data: { title: query, content: "test" } }
+      : { method: 'GET' };
+
+    axiosInstance(apiEndpoint, requestConfig)
+      .then((data) => {
         setAppState({ loading: false, news: data.data });
       })
-      .catch((err) =>{
-
-        // console.log(err);
-        if (err.response.status === 401) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
+      .catch((err) => {
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          navigate('/login');
+        } else {
+          setAppState({ loading: false, news: null });
         }
+      });
+  };
 
-        setAppState({ loading: true, news: null });
-        navigate('/login');
+  // Call fetchNews when the component mounts
+  useEffect(() => {
+    fetchNews(null); // Fetch existing news on mount
+  }, []);
 
-      })
-      ;
-    
-  }, [setAppState]);
-
-  
+  // Handle query input from StockSearchBar
+  const handleSearchSubmit = (query: string) => {
+    fetchNews(query);
+  };
 
   return (
-      
-      <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
-        <CssBaseline />
-        <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
-        <Divider />       
-        <StockSearchBar  />
-        <Divider />  
-        
-        <div style={{ marginTop: '128px', marginBottom: '128px' }}>
-          <NewsLoading isloading={appState.loading} news={appState.news} />
-        </div>
-        <Divider />
+    <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
+      <CssBaseline />
+      <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
+      <Divider />
+      <StockSearchBar onSearchSubmit={handleSearchSubmit} />
+      <Divider />
 
-        <Footer />
-        
-      </ThemeProvider>
-  )
-  
+      <div style={{ marginTop: '128px', marginBottom: '128px' }}>
+        <NewsLoading isLoading={appState.loading} news={appState.news} />
+      </div>
+      <Divider />
+
+      <Footer />
+    </ThemeProvider>
+  );
 }
 
-export default myNews;
+export default MyNews;
