@@ -4,8 +4,10 @@ from rest_framework import generics
 from news.models import News
 from .serializers import NewsSerializer
 from rest_framework.authentication import BasicAuthentication
+from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound, NotAcceptable
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS, BasePermission, AllowAny
 from  rest_framework.viewsets import ModelViewSet
+from rest_framework.pagination import PageNumberPagination
 from news.util.stock_writer import write_new_query_to_db
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,7 +16,13 @@ from datetime import datetime
 from news.models import News, Keyword
 from users.models import NewUser as User
 from news_api.scrapers import google_news_scraper
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 # Create your views here.
+
 
 
 class NewsUserWritePermission(BasePermission):
@@ -38,43 +46,85 @@ class NewsUserWritePermission(BasePermission):
 #         user = self.request.user
 #         return News.objects.filter(subscribers=user)
 
+class NewsPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 12
+
+
+    def get_paginated_response(self, data):
+
+    
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'page_number': self.page.number,  # Add the current page number
+            'results': data
+        })
+    
+
 class NewsList(generics.ListCreateAPIView):
     # authentication_classes = [BasicAuthentication]
+
+    pagination_class = NewsPagination
+    page_size = 10
     def get_queryset(self):
         user = self.request.user
-        return News.newsobjects.filter(subscribers__in=[user.id]).order_by('-created_at')[:10]
+        return News.newsobjects.filter(subscribers__in=[user.id]).order_by('-created_at')
     
     def create(self, request, *args, **kwargs):
-        #TODO: Add validation, fix post issue when writing multiple articles, writing duplicate articles
         #TODO: Add keyword match and fetch similar articles for new users and add new sunscription to it
         #TODO: Filter only latest articles and archive older articles
         user = request.user
         query = request.data.get('title')
-        print(query)
+        paginator = self.pagination_class()
+        # print(query)
 
         # Validate that the required fields are present
         if not query:
             return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
         # Create the news object
-        keyword_objects = []
-        for name in query.split():
-            keyword_instance, _ = Keyword.objects.get_or_create(name=name)
-            keyword_objects.append(keyword_instance)
-        # write_new_query_to_db(user, self.request.POST.get('title'))
+            keyword_objects = []
+            for name in query.split():
+                keyword_instance, _ = Keyword.objects.get_or_create(name=name)
+                keyword_objects.append(keyword_instance)
+            # write_new_query_to_db(user, self.request.POST.get('title'))
 
-        # test_news = [{'title': 'Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’ - Fortune', 'link': 'https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5', 'description': '<a href="https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5" target="_blank">Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’</a>&nbsp;&nbsp;<font color="#6f6f6f">Fortune</font>', 'published': 'Sun, 29 Sep 2024 09:00:00 GMT', 'source': {'href': 'https://fortune.com', 'title': 'Fortune'}, 'page_title': "Angry Amazon employees are 'rage applying' for new jobs after Andy Jassy's RTO mandate | Fortune", 'summary': "Several Amazon employees are looking for new jobs as a revolt against Amazon's return-to-office (RTO) mandate announced by CEO Andy Jassy. The mandate requires employees to return to the office five days a week. Many Amazon workers were expecting and hoping for a hybrid work model instead, which allows them to split their work week between the office and home. Amazon employees, including those hired virtually during the pandemic, are expressing their anger and dissatisfaction with the mandate, describing it as a trust betrayal from the company and its leadership. Some employees believe this mandate is a ploy by the company to reduce headcount."}]
+            test_news = [{'title': 'Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’ - Fortune', 'link': 'https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5', 'description': '<a href="https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5" target="_blank">Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’</a>&nbsp;&nbsp;<font color="#6f6f6f">Fortune</font>', 'published': 'Sun, 29 Sep 2024 09:00:00 GMT', 'source': {'href': 'https://fortune.com', 'title': 'Fortune'}, 'page_title': "Angry Amazon employees are 'rage applying' for new jobs after Andy Jassy's RTO mandate | Fortune", 'summary': "Several Amazon employees are looking for new jobs as a revolt against Amazon's return-to-office (RTO) mandate announced by CEO Andy Jassy. The mandate requires employees to return to the office five days a week. Many Amazon workers were expecting and hoping for a hybrid work model instead, which allows them to split their work week between the office and home. Amazon employees, including those hired virtually during the pandemic, are expressing their anger and dissatisfaction with the mandate, describing it as a trust betrayal from the company and its leadership. Some employees believe this mandate is a ploy by the company to reduce headcount."}]
 
-        news_list  = google_news_scraper.main(query=query)
-        created_news = []
-        # print(test_news)
-        for news in news_list:
-            try:
+            # news_list  = google_news_scraper.main(query=query)
+            news_list = test_news
+            # created_news = []
+            # print(test_news)
+            unserialized_data, new_data = [], []
+            for news in news_list:
+                
                 # Check if the news object already exists based on the title
-                existing_news = News.newsobjects.filter(title=news['title']).first()
+                existing_news = News.newsobjects.filter(title=news['title'])
                 if existing_news:
-                    # If it exists, append the existing news data
-                    created_news.append(self.get_serializer(existing_news).data)
+                # Update each existing news item
+                    for item in existing_news:
+                        # Use the update method of the serializer
+                        existing_data = {
+                            
+                            'title': item.title,
+                            'headline': item.headline,
+                            'content': item.content,
+                            'author': item.author,
+                            'status': item.status,
+                            'url': item.url,
+                            'created_at': item.created_at,
+                            'subscribers': [user.id],
+                        }
+                        serializer = self.get_serializer(item, data=existing_data, partial=True)
+
+                        if serializer.is_valid(raise_exception=True):
+                            serializer.save()
+                        print("Updated existing news:", news['title'])
+                        # add updated data to be returned to current view
+                        unserialized_data.append(existing_data)
                 else:
                     # Prepare data for the new news object
                     data = {
@@ -90,22 +140,33 @@ class NewsList(generics.ListCreateAPIView):
                         ),
                         'subscribers': [user.id],
                     }
+                    new_data.append(data)
+                    unserialized_data.append(data)
 
-                    # Create and validate the serializer
-                    serializer = self.get_serializer(data=data)
+            logger.info(f"Created {len(new_data)} news items.")
+            serializer = self.get_serializer(data=unserialized_data, many=True)
 
-                    if serializer.is_valid(raise_exception=True):
-                        news_instance = serializer.save()
-                        news_instance.keywords.set(keyword_objects)
-                        created_news.append(serializer.data)  # Append new news data
+            if serializer.is_valid(raise_exception=True):
+                news_instances = serializer.save()
+                for instance in news_instances:
+                    instance.keywords.set(keyword_objects)
 
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            # Check if created_news is empty and respond accordingly
-        if not created_news:
-            return Response({"error": "No news items created or found."}, status=status.HTTP_204_NO_CONTENT)
+            created_news = serializer.data
+            # print(created_news)
 
-        return Response(created_news, status=status.HTTP_201_CREATED)  # Move this outside the loop
+            paginted_news = self.paginate_queryset(created_news)
+
+            print(paginator.get_paginated_response(paginted_news))
+            return paginator.get_paginated_response(paginted_news)
+            # return Response(created_news, status=status.HTTP_201_CREATED)           
+                    
+
+        except NotFound as e:
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
         

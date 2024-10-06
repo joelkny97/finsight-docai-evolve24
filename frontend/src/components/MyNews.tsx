@@ -6,7 +6,7 @@ import StockSearchBar from './StockSearch';
 import News from './News';
 import getLPTheme from './getLPTheme';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { PaletteMode } from '@mui/material';
+import { Grid, PaletteMode } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -15,6 +15,9 @@ import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import AppAppBar from './AppAppBar';
 import Footer from './Footer';
 import Box from '@mui/material/Box';
+import Pagination from '@mui/material/Pagination';
+
+const apiEndpoint = 'http://127.0.0.1:8000/api/news/';
 
 interface ToggleCustomThemeProps {
   showCustomTheme: boolean;
@@ -61,9 +64,14 @@ function ToggleCustomTheme({
 
 function MyNews() {
   const NewsLoading = NewsLoadingComponent(News);
+
+  const [baseURL, setBaseURL] = useState<string>(apiEndpoint);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [appState, setAppState] = useState({
     loading: false,
     news: null,
+    count: 0,
   });
 
   const navigate = useNavigate();
@@ -73,6 +81,38 @@ function MyNews() {
   const LPtheme = createTheme(getLPTheme(mode));
   const defaultTheme = createTheme({ palette: { mode } });
 
+  const paginateHandle= async (url: string | null)=>{
+
+    setAppState({ loading: true, news: null, count: 0 });
+    axiosInstance.defaults.headers['Authorization'] = `JWT ${localStorage.getItem('access_token')}`;
+
+    try {
+      
+      const requestConfig = { method: 'GET' };
+      if (url) {
+      const response = await axiosInstance(url, requestConfig);
+      setTotalPages(Math.ceil(response.data.count / 10));
+  
+      setAppState({ loading: false, news: response.data.results, count: response.data.count });
+      
+      }
+      
+
+    } catch (err: any) {
+      console.error(err);
+
+      console.log(err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        navigate('/login');
+      } else {
+        setAppState({ loading: false, news: null, count: 0 });
+      }
+    }
+    
+  };
+
   const toggleColorMode = () => {
     setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -81,29 +121,43 @@ function MyNews() {
     setShowCustomTheme((prev) => !prev);
   };
 
-  const fetchNews = (query: string | null) => {
-    setAppState({ loading: true, news: null });
+  const fetchNews = async (query: string | null) => {
+    setAppState({ loading: true, news: null, count: 0 });
     axiosInstance.defaults.headers['Authorization'] = `JWT ${localStorage.getItem('access_token')}`;
 
-    const apiEndpoint = 'http://127.0.0.1:8000/api/news/';
-    const requestConfig = query
-      ? { method: 'POST', data: { title: query, content: "test" } }
-      : { method: 'GET' };
+    try {
+      
+      const requestConfig = query
+        ? { method: 'POST', data: { title: query } }
+        : { method: 'GET' };
+    
+      const response = await axiosInstance(apiEndpoint, requestConfig);
+      setTotalPages(Math.ceil(response.data.count / 10));
+  
+      setAppState({ loading: false, news: response.data.results, count: response.data.count });
+      
+      
 
-    axiosInstance(apiEndpoint, requestConfig)
-      .then((data) => {
-        setAppState({ loading: false, news: data.data });
-      })
-      .catch((err) => {
-        if (err.response && err.response.status === 401) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          navigate('/login');
-        } else {
-          setAppState({ loading: false, news: null });
-        }
-      });
+    } catch (err: any) {
+      console.error(err);
+
+      console.log(err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        navigate('/login');
+      } else {
+        setAppState({ loading: false, news: null, count: 0 });
+      }
+    }
   };
+
+  const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    const targetUrl = `${apiEndpoint}?page=${page}`; // Construct the URL based on the selected page
+    await paginateHandle(targetUrl);
+  };
+  
 
   // Call fetchNews when the component mounts
   useEffect(() => {
@@ -126,6 +180,16 @@ function MyNews() {
       <div style={{ marginTop: '128px', marginBottom: '128px' }}>
         <NewsLoading isLoading={appState.loading} news={appState.news} />
       </div>
+    
+
+      <Pagination 
+      sx={{ display: 'flex', justifyContent: 'center'  }} 
+      count={totalPages} 
+      page={currentPage}
+      variant="outlined" shape="rounded"
+      onChange={ handlePageChange } 
+       />
+      
       <Divider />
 
       <Footer />

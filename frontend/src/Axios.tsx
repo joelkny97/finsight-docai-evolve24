@@ -4,7 +4,7 @@ const baseURL = 'http://127.0.0.1:8000/';
 
 const axiosInstance = axios.create({
 	baseURL: baseURL,
-	timeout: 5000,
+	timeout: 60000,
 	headers: {
 		Authorization: localStorage.getItem('access_token')
 			? 'JWT ' + localStorage.getItem('access_token')
@@ -24,6 +24,7 @@ axiosInstance.interceptors.response.use(
 		const originalRequest = error.config;
 
 		if (typeof error.response === 'undefined') {
+			console.log(error.message);
 			alert(
 				'A server/network error occurred. ' +
 					'Looks like CORS might be the problem. ' +

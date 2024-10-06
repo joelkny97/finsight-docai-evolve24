@@ -5,6 +5,10 @@ from django.utils import timezone
 
 
 class Category(models.Model):
+
+    class Meta:
+        verbose_name_plural  =  "Categories"
+
     title = models.CharField(max_length=100)
     
     def __str__(self):
@@ -26,6 +30,9 @@ class Keyword(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
 class News(models.Model):
+
+    class Meta:
+        verbose_name_plural  =  "News"
 
     options = (
         ('subscribed', 'Subscribed'),
@@ -53,7 +60,7 @@ class News(models.Model):
     author = models.TextField(null=True)
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='images/', blank=True, null=True)
-    url = models.URLField(blank=True, null=True, max_length=500)
+    url = models.URLField(blank=True, null=True, max_length=2000)
     status = models.CharField(choices=options, default='all', max_length=25)
 
     keywords = models.ManyToManyField(Keyword, blank=True)
