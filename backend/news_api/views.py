@@ -71,114 +71,73 @@ class NewsPagination(PageNumberPagination):
     
 
 class NewsList(generics.ListCreateAPIView):
-    # authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = NewsSerializer
 
-    # pagination_class = NewsPagination
-    page_size = 10
     def get_queryset(self):
         user = self.request.user
-        return News.newsobjects.filter(subscribers__in=[user.id]).order_by('-created_at')
-    
+        return News.newsobjects.filter(subscribers=user).order_by('-created_at')
+
     def create(self, request, *args, **kwargs):
-        #TODO: Add keyword match and fetch similar articles for new users and add new sunscription to it
-        #TODO: Filter only latest articles and archive older articles
         user = request.user
         query = request.data.get('title')
-        # paginator = self.pagination_class()
-        # print(query)
 
         # Validate that the required fields are present
         if not query:
             return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-        # Create the news object
             keyword_objects = []
             for name in query.split():
                 keyword_instance, _ = Keyword.objects.get_or_create(name=name)
                 keyword_objects.append(keyword_instance)
-            # write_new_query_to_db(user, self.request.POST.get('title'))
 
-            test_news = [{'title': 'Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’ - Fortune', 'link': 'https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5', 'description': '<a href="https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5" target="_blank">Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’</a>&nbsp;&nbsp;<font color="#6f6f6f">Fortune</font>', 'published': 'Sun, 29 Sep 2024 09:00:00 GMT', 'source': {'href': 'https://fortune.com', 'title': 'Fortune'}, 'page_title': "Angry Amazon employees are 'rage applying' for new jobs after Andy Jassy's RTO mandate | Fortune", 'summary': "Several Amazon employees are looking for new jobs as a revolt against Amazon's return-to-office (RTO) mandate announced by CEO Andy Jassy. The mandate requires employees to return to the office five days a week. Many Amazon workers were expecting and hoping for a hybrid work model instead, which allows them to split their work week between the office and home. Amazon employees, including those hired virtually during the pandemic, are expressing their anger and dissatisfaction with the mandate, describing it as a trust betrayal from the company and its leadership. Some employees believe this mandate is a ploy by the company to reduce headcount."}]
-
-            # news_list  = google_news_scraper.main(query=query)
-            news_list = test_news
-            unserialized_data, new_data = [], []
-            for news in news_list:
-                
-                # Check if the news object already exists based on the title
-                existing_news = News.newsobjects.filter(title=news['title'])
-                logger.info("Existing news:", news['title'])
-                if existing_news:
-                # Update each existing news item
-                    for item in existing_news:
-                        # Use the update method of the serializer
-                        existing_data = {
-                            
-                            'title': item.title,
-                            'headline': item.headline,
-                            'content': item.content,
-                            'author': item.author,
-                            'status': item.status,
-                            'url': item.url,
-                            'created_at': item.created_at,
-                            'subscribers': [user.id],
             
-                        }
-                        serializer = self.get_serializer(item, data=existing_data, partial=True)
 
-                        if serializer.is_valid(raise_exception=True):
-                            serializer.save()
-                        logger.info("Updated existing news:", news['title'])
-                        # add updated data to be returned to current view
-                        unserialized_data.append(existing_data)
-                else:
-                    # Prepare data for the new news object
-                    data = {
-                        'title': news['title'],
+            news_list = google_news_scraper.main(query=query)
+            # Simulated scraped news items
+            # test_news = [{'title': 'Angry Amazon employees are ‘rage applying’ for new jobs after Andy Jassy’s RTO mandate: ‘I will not go back’ - Fortune', 'link': 'https://news.google.com/rss/articles/CBMigwFBVV95cUxQc1hSMjBEVmpfdlBheHVVaDE2blA2c0Q4ZzMxSm5Ebjl3LTVnOThjdWtYTDZBR3FrM0FnNlFXZ2RlcmRnU0EtU09Wd1dJOEJTdUlfQjN1OThFRFBNdmlPWjdPYk45SldmckpMQUhvWGZILXBkbDhnckZuOE1BclNaUi1VYw?oc=5', 'summary': "Some summary..."}]
+            # news_list = test_news
+            
+            # To hold new or updated news data
+            unserialized_data = []
+
+            for news in news_list:
+                # Attempt to get the existing news item or create a new one
+                existing_news, created = News.newsobjects.get_or_create(
+                    title=news['title'],
+                    defaults={
                         'headline': news['title'],
                         'content': news['summary'],
                         'author': "FinSight AI Writer",
                         'status': "all",
                         'url': news['link'],
-                        'created_at': timezone.make_aware(
-                            datetime.strptime(news['published'], "%a, %d %b %Y %H:%M:%S %Z"),
-                            timezone.get_current_timezone()
-                        ),
-                        'subscribers': [user.id],
-                        
+                        'created_at': timezone.make_aware(datetime.strptime(news['published'], "%a, %d %b %Y %H:%M:%S %Z"), timezone.get_current_timezone()),  # Replace with actual timestamp
                     }
-                    new_data.append(data)
-                    unserialized_data.append(data)
+                )
 
-            logger.info(f"Created {len(new_data)} news items.")
-            serializer = self.get_serializer(data=unserialized_data, many=True)
+                if not created:
+                    # If the news item already exists
+                    if user not in existing_news.subscribers.all():
+                        existing_news.subscribers.add(user)  # Add user to subscribers if not already present
+                    logger.info(f"Existing news updated:{existing_news.title}" )
 
-            if serializer.is_valid(raise_exception=True):
-                news_instances = serializer.save()
-                for instance in news_instances:
-                    instance.keywords.set(keyword_objects)
-            logger.info(f"Created {len(serializer.data)} news items.")
-            created_news = serializer.data
-            # print(created_news)
+                # If it was created, we need to set keywords
+                if created:
+                    existing_news.subscribers.add(user)
+                    existing_news.keywords.set(keyword_objects)
+                
+                unserialized_data.append(self.get_serializer(existing_news).data)
 
-            return Response(created_news, status=status.HTTP_201_CREATED)           
-                    
+            return Response(unserialized_data, status=status.HTTP_201_CREATED)
 
         except NotFound as e:
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
-        
         except Exception as e:
-            traceback.print_exc()
-
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-
-        
+            logger.error("Error occurred: ", exc_info=e)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)        
 
     permission_classes = [IsAuthenticated]
-
-    # queryset = News.newsobjects.all()
 
     
     serializer_class = NewsSerializer
