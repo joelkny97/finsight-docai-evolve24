@@ -17,6 +17,13 @@ from news.models import News, Keyword
 from users.models import NewUser as User
 from news_api.scrapers import google_news_scraper
 import logging
+import traceback
+
+logger = logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +61,11 @@ class NewsPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
 
-    
         return Response({
-            'count': self.page.paginator.count,
+            
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
-            'page_number': self.page.number,  # Add the current page number
+            'page': self.request.query_params.get('page'),  # Add the current page number
             'results': data
         })
     
@@ -67,7 +73,7 @@ class NewsPagination(PageNumberPagination):
 class NewsList(generics.ListCreateAPIView):
     # authentication_classes = [BasicAuthentication]
 
-    pagination_class = NewsPagination
+    # pagination_class = NewsPagination
     page_size = 10
     def get_queryset(self):
         user = self.request.user
@@ -78,7 +84,7 @@ class NewsList(generics.ListCreateAPIView):
         #TODO: Filter only latest articles and archive older articles
         user = request.user
         query = request.data.get('title')
-        paginator = self.pagination_class()
+        # paginator = self.pagination_class()
         # print(query)
 
         # Validate that the required fields are present
@@ -96,13 +102,12 @@ class NewsList(generics.ListCreateAPIView):
 
             # news_list  = google_news_scraper.main(query=query)
             news_list = test_news
-            # created_news = []
-            # print(test_news)
             unserialized_data, new_data = [], []
             for news in news_list:
                 
                 # Check if the news object already exists based on the title
                 existing_news = News.newsobjects.filter(title=news['title'])
+                logger.info("Existing news:", news['title'])
                 if existing_news:
                 # Update each existing news item
                     for item in existing_news:
@@ -117,12 +122,13 @@ class NewsList(generics.ListCreateAPIView):
                             'url': item.url,
                             'created_at': item.created_at,
                             'subscribers': [user.id],
+            
                         }
                         serializer = self.get_serializer(item, data=existing_data, partial=True)
 
                         if serializer.is_valid(raise_exception=True):
                             serializer.save()
-                        print("Updated existing news:", news['title'])
+                        logger.info("Updated existing news:", news['title'])
                         # add updated data to be returned to current view
                         unserialized_data.append(existing_data)
                 else:
@@ -139,6 +145,7 @@ class NewsList(generics.ListCreateAPIView):
                             timezone.get_current_timezone()
                         ),
                         'subscribers': [user.id],
+                        
                     }
                     new_data.append(data)
                     unserialized_data.append(data)
@@ -150,21 +157,19 @@ class NewsList(generics.ListCreateAPIView):
                 news_instances = serializer.save()
                 for instance in news_instances:
                     instance.keywords.set(keyword_objects)
-
+            logger.info(f"Created {len(serializer.data)} news items.")
             created_news = serializer.data
             # print(created_news)
 
-            paginted_news = self.paginate_queryset(created_news)
-
-            print(paginator.get_paginated_response(paginted_news))
-            return paginator.get_paginated_response(paginted_news)
-            # return Response(created_news, status=status.HTTP_201_CREATED)           
+            return Response(created_news, status=status.HTTP_201_CREATED)           
                     
 
         except NotFound as e:
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         
         except Exception as e:
+            traceback.print_exc()
+
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 

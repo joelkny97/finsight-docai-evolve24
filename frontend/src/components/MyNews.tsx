@@ -71,7 +71,6 @@ function MyNews() {
   const [appState, setAppState] = useState({
     loading: false,
     news: null,
-    count: 0,
   });
 
   const navigate = useNavigate();
@@ -83,7 +82,7 @@ function MyNews() {
 
   const paginateHandle= async (url: string | null)=>{
 
-    setAppState({ loading: true, news: null, count: 0 });
+    setAppState({ loading: true, news: null });
     axiosInstance.defaults.headers['Authorization'] = `JWT ${localStorage.getItem('access_token')}`;
 
     try {
@@ -91,9 +90,9 @@ function MyNews() {
       const requestConfig = { method: 'GET' };
       if (url) {
       const response = await axiosInstance(url, requestConfig);
-      setTotalPages(Math.ceil(response.data.count / 10));
+      // setTotalPages(Math.ceil(response.data.count / 10));
   
-      setAppState({ loading: false, news: response.data.results, count: response.data.count });
+      setAppState({ loading: false, news: response.data });
       
       }
       
@@ -107,7 +106,7 @@ function MyNews() {
         localStorage.removeItem('refresh_token');
         navigate('/login');
       } else {
-        setAppState({ loading: false, news: null, count: 0 });
+        setAppState({ loading: false, news: null });
       }
     }
     
@@ -122,7 +121,7 @@ function MyNews() {
   };
 
   const fetchNews = async (query: string | null) => {
-    setAppState({ loading: true, news: null, count: 0 });
+    setAppState({ loading: true, news: null });
     axiosInstance.defaults.headers['Authorization'] = `JWT ${localStorage.getItem('access_token')}`;
 
     try {
@@ -132,9 +131,9 @@ function MyNews() {
         : { method: 'GET' };
     
       const response = await axiosInstance(apiEndpoint, requestConfig);
-      setTotalPages(Math.ceil(response.data.count / 10));
+      // setTotalPages(Math.ceil(response.data.count / 10));
   
-      setAppState({ loading: false, news: response.data.results, count: response.data.count });
+      setAppState({ loading: false, news: response.data });
       
       
 
@@ -147,7 +146,7 @@ function MyNews() {
         localStorage.removeItem('refresh_token');
         navigate('/login');
       } else {
-        setAppState({ loading: false, news: null, count: 0 });
+        setAppState({ loading: false, news: null });
       }
     }
   };
@@ -182,13 +181,13 @@ function MyNews() {
       </div>
     
 
-      <Pagination 
+      {/* <Pagination 
       sx={{ display: 'flex', justifyContent: 'center'  }} 
       count={totalPages} 
       page={currentPage}
       variant="outlined" shape="rounded"
       onChange={ handlePageChange } 
-       />
+       /> */}
       
       <Divider />
 
