@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Button, Box, Paper } from '@mui/material';
-import axiosInstance from '../Axios.tsx';
 
 interface Stock {
   title: string;
@@ -37,7 +36,11 @@ export default function StockSearchBar({ onSearchSubmit }: StockSearchBarProps) 
   const handleInputChange = (event: React.SyntheticEvent<Element, Event>, value: string) => {
     setInputValue(value);
     if (value) {
-      console.log(value);
+      // Keep options based on the input
+      const filteredOptions = topStocks.filter(stock =>
+        stock.title.toLowerCase().includes(value.toLowerCase())
+      );
+      setOptions(filteredOptions);
     } else {
       setOptions([]);
     }
@@ -55,9 +58,10 @@ export default function StockSearchBar({ onSearchSubmit }: StockSearchBarProps) 
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedStock) {
-      // Pass the selected stock title to the parent component
-      onSearchSubmit(selectedStock.title);
+    // Use the input value if it's not empty, otherwise use the selected stock title
+    const query = selectedStock ? selectedStock.title : inputValue;
+    if (query) {
+      onSearchSubmit(query);
     }
   };
 
@@ -72,13 +76,15 @@ export default function StockSearchBar({ onSearchSubmit }: StockSearchBarProps) 
         <Autocomplete
           freeSolo
           disableClearable
+          open={open}
           onOpen={handleOpen}
           onClose={handleClose}
-          options={topStocks.map((option) => option.title)}
+          options={options.map((option) => option.title)}
           onInputChange={handleInputChange}
           onChange={(event: React.SyntheticEvent, newValue: string | null) => {
             const selected = topStocks.find(stock => stock.title === newValue);
             setSelectedStock(selected || null);
+            setInputValue(newValue || ''); // Update inputValue when an option is selected
           }}
           renderInput={(params) => (
             <TextField
@@ -97,6 +103,8 @@ export default function StockSearchBar({ onSearchSubmit }: StockSearchBarProps) 
               size="small"
               fullWidth
               style={{ marginRight: '8px' }}
+              value={inputValue} // Control the input value
+              onChange={(e) => setInputValue(e.target.value)} // Handle input change
             />
           )}
           style={{ flex: 1 }}

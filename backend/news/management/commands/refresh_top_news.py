@@ -12,7 +12,9 @@ class Command(BaseCommand):
     
     def handle(self, *args, **kwargs): 
 
-        if not News.objects.datetimes('created_at', 'day', order='DESC').filter(status="top").latest('created_at')  > timezone.now() - datetime.timedelta(days=1):
+        news_obj = News.objects.datetimes('created_at', 'day', order='DESC').filter(status="top").latest('created_at')
+
+        if not news_obj or news_obj  > timezone.now() - datetime.timedelta(days=1):
             # pass
             top_news = top_news_fetcher.main()
 

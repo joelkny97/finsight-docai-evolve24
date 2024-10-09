@@ -1,18 +1,17 @@
 import React from "react";
 import { Component } from "react";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
-function NewsLoading(Component: any) {
+function NewsLoading(WrappedComponent: any) {
     return function NewsLoadingComponent({ isLoading, ...props }: any) {
         if (!isLoading) {
-            return <Component {...props} />;
-        
-           
-        
+            return <WrappedComponent {...props} />;
         }
         return (
-            <p style={{ textAlign: 'center', 'fontSize': '20px' }}>
-                Loading...
-            </p>
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress size={60} />
+            </Box>
         );
     }
 }

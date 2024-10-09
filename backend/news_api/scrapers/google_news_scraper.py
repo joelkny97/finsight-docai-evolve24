@@ -24,7 +24,7 @@ async def extract_content(html):
     try:
         chat_completion = openai.chat.completions.create(
             messages=[
-                {"role": "system", "content": "You are an AI Agent that summarizes the news article from the HTML page. Please summarize the article."},
+                {"role": "system", "content": "You are an AI Agent that summarizes the news article from the HTML page. Please summarize the article and focus on financial news."},
                 {"role": "user", "content": f"HTML: ```{html}```"}
             ],
             model="gpt-4"

@@ -11,11 +11,8 @@ app_name = 'news_api'
 # router.register('', NewsList, basename='news')
 
 
-# urlpatterns = router.urls
-
-
 urlpatterns = [
-    path('', NewsList.as_view(), name='listcreate'),
-    path('<int:pk>/', NewsDetail.as_view(), name='detailcreate'),
-    path('topnews/', TopNewsList.as_view(), name='topnews'),
+    path('', NewsList.as_view({'get': 'list', 'post': 'create'}), name='listcreate'),  # For listing and creating news
+    path('<int:pk>/', NewsDetail.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='detailcreate'),  # For retrieving, updating, and deleting a news item
+    path('topnews/', TopNewsList.as_view({'get': 'list'}), name='topnews'),  # For listing top news
 ]
