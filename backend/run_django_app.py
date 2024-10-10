@@ -1,1 +1,1 @@
-!python backend/manage.py runserver 127.0.0.1:3000
+!gunicorn backend.wsgi:application --bind 127.0.0.1:3000
