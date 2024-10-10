@@ -7,7 +7,7 @@ prototype_version: 1.0
 date: "2024-10-09"
 
 environment_variables:
-  DJANGO_SECRET_KEY:
+  SECRET_KEY:
     default: "django-insecure-+j-6(rknlxbi80oylp9(qbzef=op!7m*8+dwtqo&*%rs!mg_i5"
     description: "Secret key for Django application."
     required: true
