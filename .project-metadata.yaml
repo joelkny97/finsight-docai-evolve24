@@ -58,7 +58,18 @@ tasks:
     cpu: 2
     memory: 8
 
-
+ ## APPLICATION related AMP snippet for Django backend
+  - type: run_session
+    name: Django DB Migration
+    short_summary: This is the Django backend DB migration step.
+    long_summary: This is used to create the database for the Django backend.
+    subdomain: django-db
+    script: backend/migrate_db.py
+    cpu: 2
+    memory: 8
+    gpu: 1
+    environment_variables:
+      TASK_TYPE: START_APPLICATION
   ## APPLICATION related AMP snippet for Django backend
   - type: start_application
     name: Django Backend
