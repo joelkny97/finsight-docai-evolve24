@@ -68,7 +68,7 @@ tasks:
     short_summary: This is the Django backend application.
     long_summary: A Django REST API serving the React frontend.
     subdomain: django-backend
-    script: 2_backend/backend/manage.py runserver 0.0.0.0:8000
+    script: backend/manage.py runserver 0.0.0.0:8000
     environment_variables:
       TASK_TYPE: START_APPLICATION
 
