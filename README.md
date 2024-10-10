@@ -6,6 +6,7 @@
 
 FinSight-DocAI is an innovative application that leverages OpenAI and HuggingFace models to provide personalized financial news summarization and document analysis. The application is designed to help users stay informed about the latest financial trends and to facilitate in-depth analysis of financial documents.
 
+
 ## Features
 
 1. **Financial News Summarization**:
@@ -46,7 +47,7 @@ FinSight-DocAI is an innovative application that leverages OpenAI and HuggingFac
    npm install frontend/package.json
 
 4. **Environment Variables**:
-   - Create a .env file in the backend directory and add the necessary environment variables (e.g., `DJANGO_SECRET_KEY`, `DATABASE_URL`).
+   - Create a .env file in the backend directory and add the necessary environment variables (e.g., `DJANGO_SECRET_KEY`, `DATABASE_URL`, `OPEN_API_KEY`).
 
 5. **Run the Backend**:
    - Navigate back to the backend directory and run the server:
@@ -69,6 +70,27 @@ FinSight-DocAI is an innovative application that leverages OpenAI and HuggingFac
 - Open your browser and go to http://localhost:8000/mynews for the financial news portal.
 - Additionally, 
 - Go to http://localhost:8000/financeqa for the document Q&A application.
+
+### CML Workbench
+
+- This project was developed as part of the Cloudera EVOLVE24 GenAI Hackathon and the resources and access to the 
+CML Workbench has been provided by Cloudera
+-  It involves editing the .project-metadata.yaml file for deployment configuration.
+
+## HugginFace Models and Dataset used "
+- @software{Lutece-Vision-Base,
+  author = {Sujet AI, Allaa Boutaleb, Hamed Rahimi},
+  title = {Lutece-Vision-Base: A Fine-tuned VLM for Financial Document Analysis},
+  year = {2024},
+  url = {https://huggingface.co/sujet-ai/Lutece-Vision-Base}
+}
+- @dataset{Sujet-Finance-QA-Vision-100k,
+  author = {Sujet AI, Allaa Boutaleb, Hamed Rahimi},
+  title = {Sujet-Finance-QA-Vision-100k: A Large-Scale Dataset for Financial Document VQA},
+  year = {2024},
+  url = {https://huggingface.co/datasets/sujet-ai/Sujet-Finance-QA-Vision-100k}
+}
+
 
 ## Contributing
 
