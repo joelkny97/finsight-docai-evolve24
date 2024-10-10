@@ -58,6 +58,8 @@ tasks:
     cpu: 2
     memory: 8
 
+  
+
  ## APPLICATION related AMP snippet for Django backend
   - type: run_session
     name: Django DB Migration
@@ -70,6 +72,17 @@ tasks:
     gpu: 1
     environment_variables:
       TASK_TYPE: START_APPLICATION
+
+  - type: run_session
+    name: Build React App
+    short_summary: Build the React frontend application.
+    long_summary: This step builds the React application for production.
+    script: frontend/build_react_app.py  # Create this script to run `npm run build`
+    kernel: python3
+    cpu: 2
+    memory: 4
+  
+  
   ## APPLICATION related AMP snippet for Django backend
   - type: start_application
     name: Django Backend
@@ -82,4 +95,14 @@ tasks:
     gpu: 1
     environment_variables:
       TASK_TYPE: START_APPLICATION
+
+  # Expose React Frontend
+  - type: start_application
+    name: React Frontend
+    short_summary: Start the React frontend application.
+    long_summary: Serve the built React frontend application.
+    subdomain: react-frontend
+    script: frontend/run_react_app.py
+    cpu: 2
+    memory: 4
 

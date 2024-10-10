@@ -135,6 +135,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = BASE_DIR / "staticfiles" 
+
 STATICFILES_BASE = BASE_DIR / "staticfiles"
 
 REACT_JS_BUILD_DIR = STATICFILES_BASE / "frontend" / "prod"
