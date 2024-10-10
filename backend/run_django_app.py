@@ -1,1 +1,1 @@
-!python backend/manage.py runserver 0.0.0.0:3000
+!python backend/manage.py runserver --bind 127.0.0.1:3000
