@@ -65,7 +65,7 @@ tasks:
     short_summary: This is the Django backend application.
     long_summary: A Django REST API serving the React frontend.
     subdomain: django-backend
-    script: python backend/manage.py runserver 0.0.0.0:3000
+    script: backend/run_django_app.py
     cpu: 2
     memory: 8
     gpu: 1
