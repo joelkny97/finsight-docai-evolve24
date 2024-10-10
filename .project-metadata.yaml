@@ -1,0 +1,74 @@
+name: FinSight DocAI
+display_name: FinSight DocAI  
+description: A Django backend with a React frontend application deployed on Cloudera ML.
+author: Joel Kinny
+specification_version: 1.0
+prototype_version: 1.0
+date: "2024-10-09"
+
+environment_variables:
+  DJANGO_SECRET_KEY:
+    default: "django-insecure-+j-6(rknlxbi80oylp9(qbzef=op!7m*8+dwtqo&*%rs!mg_i5"
+    description: "Secret key for Django application."
+    required: true
+  DATABASE_URL:
+    default: "sqlite:///db.sqlite3"
+    description: "Database URL for Django application."
+    required: true
+  REACT_APP_API_URL:
+    default: "http://localhost:8000/api"
+    description: "API URL for the React frontend."
+    required: false
+
+runtimes:
+  - editor: Workbench
+    kernel: Python 3.10
+    edition: Nvidia GPU
+
+tasks:
+  - type: run_session
+    name: Validate GPU Availibility
+    script: 0_session-resource-validation/check_gpu_resources.py
+    short_summary: Check for GPU availibility. 
+    long_summary: Check GPUs are enabled on this workspace and are currently schedulable.
+    kernel: python3
+    cpu: 2
+    memory: 4
+  
+  - type: run_session
+    name: Validate GPU Capability
+    script: 0_session-resource-validation/check_gpu_capability.py
+    short_summary: Check for GPU capability. 
+    long_summary: Check GPU device supports the CUDA capabilities required.
+    kernel: python3
+    cpu: 2
+    memory: 4
+    gpu: 1
+
+  - type: run_session
+    name: Install Dependencies
+    script: 1_session-install-deps/install_dependencies.py
+    short_summary: Install Dependencies
+    kernel: python3
+    cpu: 2
+    memory: 8
+
+  ## SESSION related AMP snippet
+  - type: run_session
+    name: Install Dependencies
+    script: 0_session-install-dependencies/install-dependencies.py
+    short_summary: Install Python and Node.js Requirements and Dependencies
+    kernel: python3
+    cpu: 2
+    memory: 4
+
+  ## APPLICATION related AMP snippet for Django backend
+  - type: start_application
+    name: Django Backend
+    short_summary: This is the Django backend application.
+    long_summary: A Django REST API serving the React frontend.
+    subdomain: django-backend
+    script: 2_backend/backend/manage.py runserver 0.0.0.0:8000
+    environment_variables:
+      TASK_TYPE: START_APPLICATION
+
