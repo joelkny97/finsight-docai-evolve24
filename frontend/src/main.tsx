@@ -10,7 +10,7 @@ import { PaletteMode } from '@mui/material';
 import LandingPage from './components/LandingPage.tsx';
 import  Login  from './components/Authentication/Login.tsx';
 import Logout from './components/Authentication/Logout.tsx';
-import Dashboard from './components/Dashboard.tsx';
+import FinanceQA from './components/FinanceQA.tsx';
 import AccountVerification from './components/Authentication/AccountVerification.tsx';
 import ResetPasswordForm from './components/Authentication/ResetPasswordForm.tsx';
 import RequestResetPassword from './components/Authentication/RequestResetPassword.tsx';
@@ -31,7 +31,7 @@ const routing = (
         <Route path="/register" element = {<Register/>} />
         <Route path="/login" element = {<Login/>} />
         <Route path="/logout" element = {<Logout/>} />
-        <Route path="/dashboard" element = {<Dashboard/>} />
+        <Route path='/financeqa' element = {<FinanceQA/>} />
         <Route path="/mynews" element = {<MyNews/>} />
 
         <Route path="/email-verify/:token" element = {<AccountVerification/>} />

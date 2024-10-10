@@ -138,11 +138,11 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
               { loggedInState &&
                 <Box sx={{ display: { xs: 'none', md: 'flex'} }}>
                 <Link
-                  to={'/dashboard'}
+                  to={'/financeqa'}
                   
                 >
                   <Typography variant="body2" color="text.primary" sx={{ py: '6px', px: '12px' }}>
-                    Dashboard
+                    Document AI
                   </Typography>
                 </Link>
                 
